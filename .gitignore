@@ -1,0 +1,22 @@
+# Compiler files
+cache/
+out/
+.metamask
+
+# Dependency directories
+node_modules
+
+# Ignores development broadcast logs
+!/broadcast
+
+# Ignores snapshot file
+/snapshots
+
+# Docs
+docs/
+
+# Dotenv file
+.env
+
+# Ignore lib, managed by package.json dependencies
+lib
