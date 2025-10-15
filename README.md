@@ -1,6 +1,6 @@
 ---
 eip: XXXX
-title: Forkable ERC-20 Token Standard
+title: Forkable ERC-20 Token
 author: Kevin (@kevzzsk), Fuxing (@fuxingloh)
 status: Draft
 type: Standards Track
@@ -9,7 +9,7 @@ created: 2025-10-10
 requires: ERC-20
 ---
 
-# Forkable ERC-20 Token Standard (Draft)
+# Forkable ERC-20 Token (Draft)
 
 ## Abstract
 
@@ -141,7 +141,7 @@ This repository provides a minimal reference:
 ## Security Considerations
 
 - Approvals: Do not assume approvals migrate, wallets and dApps must re-approve.
-- Non-standard tokens (Rebase/fee-on-transfer): Fork semantics at a block may not capture dynamic mechanics, auditors should review source token behavior.
+- Non-standard tokens (Rebase/fee-on-transfer): Fork semantics may not capture dynamic mechanics, auditors should review source token behavior.
 - Decimals: Forked token decimals must match source token decimals to avoid balance inconsistency.
 - Forking the future: While supplying a checkpoint nonce in the future is possible, it is not recommended as it may lead to unexpected behavior.
 

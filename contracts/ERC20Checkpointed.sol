@@ -74,7 +74,7 @@ IERC20Errors
         return 18;
     }
 
-    /// @inheritdoc IERC20Checkpointed
+    /// @inheritdoc IERC20
     function totalSupply() public view virtual returns (uint256) {
         return _totalSupply.latest();
     }
@@ -84,7 +84,7 @@ IERC20Errors
         return _totalSupply.upperLookupRecent(checkpoint);
     }
 
-    /// @inheritdoc IERC20Checkpointed
+    /// @inheritdoc IERC20
     function balanceOf(address account) public view virtual returns (uint256) {
         return _balances[account].latest();
     }
