@@ -9,7 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 /**
- * @dev A forked ERC20 contract that is sourced from IERC20Checkpointed at certain checkpoint nonce
+ * @dev A forked ERC20 contract that is forked from IERC20Checkpointed at certain checkpoint nonce
  */
 abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
     mapping(address account => uint256) private _balances;

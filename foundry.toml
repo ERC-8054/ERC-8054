@@ -1,6 +1,7 @@
 [profile.default]
 src = "contracts"
 out = "out"
+test = "tests"
 libs = ["lib", "node_modules"]
 solc_version = "0.8.24"
 evm_version = 'shanghai'

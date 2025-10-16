@@ -14,20 +14,19 @@ import {IERC20Checkpointed} from "./interfaces/IERC20Checkpointed.sol";
  * @dev adapted from OpenZeppelin's ERC20 implementation with checkpointing added to balances and totalSupply.
  */
 abstract contract ERC20Checkpointed is
-Initializable,
 Context,
 IERC20Checkpointed,
 IERC20Errors
 {
     using Checkpoints for Checkpoints.Trace256;
 
-    mapping(address account => Checkpoints.Trace256) private _balances;
+    mapping(address account => Checkpoints.Trace256) internal _balances;
 
-    mapping(address account => mapping(address spender => uint256)) private _allowances;
+    mapping(address account => mapping(address spender => uint256)) internal _allowances;
 
     uint256 internal _checkpointNonce;
 
-    Checkpoints.Trace256 private _totalSupply;
+    Checkpoints.Trace256 internal _totalSupply;
 
     string internal _name;
     string internal _symbol;
@@ -37,7 +36,7 @@ IERC20Errors
      *
      * Both values are immutable: they can only be set once during construction.
      */
-    function __ERC20_init(string memory name_, string memory symbol_) internal onlyInitializing {
+    constructor(string memory name_, string memory symbol_) {
         _name = name_;
         _symbol = symbol_;
     }
@@ -92,6 +91,11 @@ IERC20Errors
     /// @inheritdoc IERC20Checkpointed
     function balanceOfAt(address account, uint256 checkpoint) public view virtual returns (uint256) {
         return _balances[account].upperLookupRecent(checkpoint);
+    }
+
+    /// @inheritdoc IERC20Checkpointed
+    function checkpointNonce() public view virtual returns (uint256) {
+        return _checkpointNonce;
     }
 
     /**
@@ -180,10 +184,12 @@ IERC20Errors
      * Emits a {Transfer} event.
      */
     function _update(address from, address to, uint256 value) internal virtual {
+        uint256 nonce = _checkpointNonce + 1;
+
         if (from == address(0)) {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
             //            _totalSupply += value;
-            _totalSupply.push(_checkpointNonce, _totalSupply.latest() + value);
+            _totalSupply.push(nonce, _totalSupply.latest() + value);
         } else {
             uint256 fromBalance = _balances[from].latest();
             if (fromBalance < value) {
@@ -191,24 +197,24 @@ IERC20Errors
             }
             unchecked {
             // Overflow not possible: value <= fromBalance <= totalSupply.
-                _balances[from].push(_checkpointNonce, fromBalance - value);
+                _balances[from].push(nonce, fromBalance - value);
             }
         }
 
         if (to == address(0)) {
             unchecked {
             // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-                _totalSupply.push(_checkpointNonce, _totalSupply.latest() - value);
+                _totalSupply.push(nonce, _totalSupply.latest() - value);
             }
         } else {
             unchecked {
             // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-                _balances[to].push(_checkpointNonce, _balances[to].latest() + value);
+                _balances[to].push(nonce, _balances[to].latest() + value);
             }
         }
 
-        // each update fn will increase the nonce, to capture the checkpoint.
-        _checkpointNonce += 1;
+        // update the nonce
+        _checkpointNonce = nonce;
 
         emit Transfer(from, to, value);
     }

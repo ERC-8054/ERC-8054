@@ -18,4 +18,9 @@ interface IERC20Checkpointed is IERC20, IERC20Metadata {
      * @param checkpoint The checkpoint to get the balance at.
      */
     function balanceOfAt(address account, uint256 checkpoint) external view returns (uint256);
+
+    /**
+     * @dev Returns the current checkpoint nonce.
+     */
+    function checkpointNonce() external view returns (uint256);
 }
