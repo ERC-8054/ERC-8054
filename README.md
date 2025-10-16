@@ -7,14 +7,14 @@ status: Draft
 type: Standards Track
 category: ERC
 created: 2025-10-10
-requires: ERC-20
+requires: 20
 ---
 
 # Forkable ERC-20 Token (Draft)
 
 ## Abstract
 
-This standard extends ERC-20 to enable efficient token forking through checkpoint-based balance tracking.
+This standard extends [ERC-20](./eip-20.md) to enable efficient token forking through checkpoint-based balance tracking.
 A forkable ERC-20 token records balance snapshots at each state change.
 A forked ERC-20 token inherits all balances from a specific checkpoint in the source token,
 allowing instant, gas-free distribution to holders without airdrops or claiming mechanisms.
@@ -51,7 +51,7 @@ to the users who have positive balance at the fork point.
 
 ### Tokenized Risk and Yield
 
-ERC-4626 is a popular standard for yield-bearing vaults that manage an underlying ERC-20 asset.
+[ERC-4626](./eip-4626.md) is a popular standard for yield-bearing vaults that manage an underlying ERC-20 asset.
 Risk and yield are commonly rebased on the same underlying asset,
 and this works very well for single-dimensional yield and risk
 (Liquid PoS ETH).
