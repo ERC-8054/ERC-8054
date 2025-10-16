@@ -181,7 +181,7 @@ All forked ERC-20 tokens:
 Checkpoints enable efficient point-in-time queries.
 By recording only when changes happens, the system maintains a compact, queryable history.
 
-Checkpoints are also trustless and verifiable.
+Checkpoints are also trustless and verifiable, albeit at higher gas cost for state updates.
 
 ### Why Not Use Merkle Trees?
 
@@ -222,8 +222,7 @@ This repository provides a minimal reference:
 - contracts/ERC20Forked.sol: ERC-20 forked from a source token at specified nonce.
 - contracts/ERC20FC.sol: ERC-20 forked and checkpointed from a source token at specified nonce.
 
-**Note**: The reference implementation is provided for illustrative purposes.
-* Production implementations should undergo thorough security audits.
+**Note**: The reference implementation is provided for illustrative purposes. Production implementations should undergo thorough security audits.
 
 ## Security Considerations
 
