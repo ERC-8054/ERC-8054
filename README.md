@@ -191,7 +191,7 @@ On the fork block, transactions can be re-ordered to allow balance manipulation 
 
 Using a monotonically increasing nonce (rather than block numbers or timestamps)
 ensures that the fork point is unambiguous and not susceptible to such manipulations.
-As each state update is recorded with a unique nonce and fork be precisely defined.
+As each state update is recorded with a unique nonce, the fork can be precisely defined.
 
 ## Backwards Compatibility
 
@@ -206,8 +206,8 @@ This repository provides a minimal reference:
 - interfaces/IERC20Checkpointed.sol: ERC-20 checkpointed interface.
 - contracts/Checkpoints.sol: lightweight checkpoint library (uint256-based) used for checkpointing.
 - contracts/ERC20Checkpointed.sol: ERC-20 with checkpointed balances and total supply.
-- contracts/ERC20Forked.sol: ERC-20 forked from a source token at specified given nonce.
-- contracts/ERC20FC.sol: ERC-20 forked and checkpointed from a source token at specified given nonce.
+- contracts/ERC20Forked.sol: ERC-20 forked from a source token at specified nonce.
+- contracts/ERC20FC.sol: ERC-20 forked and checkpointed from a source token at specified nonce.
 
 **Note**: The reference implementation is provided for illustrative purposes. Production implementations should undergo thorough security audits.
 
@@ -228,12 +228,12 @@ Auditors and integrators SHOULD carefully review source token mechanics before f
 ### Decimals Consistency
 
 Forked tokens MUST use the same decimals as the source token to prevent balance inconsistencies and loss of precision.
-Mismatch decimals MAY lead to incorrect balances and loss of precision.
+Mismatched decimals MAY lead to incorrect balances and loss of precision.
 
 ### Future Checkpoints
 
 Forking at a future checkpoint SHOULD be prevented by implementations.
-If allowed, forked token balances MAY become inconsistent and lead to accounting error.
+If allowed, forked token balances MAY become inconsistent and lead to accounting errors.
 
 ### Checkpoint Nonce Overflow
 
