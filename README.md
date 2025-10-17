@@ -203,7 +203,13 @@ On the fork block, transactions can be re-ordered to allow balance manipulation 
 
 Using a monotonically increasing nonce (rather than block numbers or timestamps)
 ensures that the fork point is unambiguous and not susceptible to such manipulations.
-As each state update is recorded with a unique nonce, the fork can be precisely defined.
+This is because each state update is recorded with a unique nonce, the fork can be precisely defined.
+
+### Gas Cost Considerations
+
+Forkable tokens MAY incur higher per-transaction costs due to checkpoint storage.
+
+This trade-off could be acceptable for tokens where forkability provides significant value (airdrops, governance, migrations).
 
 ## Backwards Compatibility
 
@@ -228,8 +234,9 @@ This repository provides a minimal reference:
 
 ### Approvals
 
-- **Approvals are not inherited**: When a token is forked, all allowances reset to zero.
-  Users and dApps MUST re-approve spending for the forked token.
+Approvals are not inherited.
+When a token is forked, all allowances reset to zero.
+Users and dApps MUST re-approve spending for the forked token.
 
 ### Non-Standard ERC-20 Tokens
 
@@ -251,7 +258,7 @@ If allowed, forked token balances MAY become inconsistent and lead to accounting
 
 ### Checkpoint Nonce Overflow
 
-Implementations should consider the implications of checkpoint nonce overflow.
+Implementations should consider the implications of checkpoint nonce overflow when using a smaller uint type.
 
 ## Reference Tests
 
@@ -259,6 +266,6 @@ See `tests/` directory for implementation tests.
 
 ## Copyright
 
-This work is made available under CC0-1.0. See LICENSE for repository licensing;
-ERC text itself is dedicated to the public domain.
+This work is made available under CC0-1.0. 
+See LICENSE for repository licensing.
 

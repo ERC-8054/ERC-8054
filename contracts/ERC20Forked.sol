@@ -33,8 +33,11 @@ abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
      * Both values are immutable: they can only be set once during construction.
      */
     constructor(string memory name_, string memory symbol_, uint32 checkpointedNonce_, address checkpointedToken_) {
-        _checkpointedNonce = checkpointedNonce_;
         _checkpointedToken = IERC20Checkpointed(checkpointedToken_);
+
+        require(checkpointedNonce_ <= _checkpointedToken.checkpointNonce(), "ERC20Forked: checkpointed nonce is in the future");
+
+        _checkpointedNonce = checkpointedNonce_;
         _name = name_;
         _symbol = symbol_;
         // copy decimals from checkpointed token
