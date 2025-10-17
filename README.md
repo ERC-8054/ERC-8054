@@ -26,7 +26,8 @@ Current methods for distributing new tokens based on existing ERC-20 token balan
 2. **Merkle-based claims**: While cheaper for deployers,
    this approach requires users to pay gas fees to claim tokens and provides poor UX due to claimer needing to provide proofs.
 
-Both methods are inefficient and prone to errors.
+Both approaches are inefficient as they rely on off-chain data construction outside the protocol's trust domain, 
+introducing potential inconsistencies and allowing for collusion within the Merkle structure.
 
 This EIP proposes a standard for forkable ERC-20 tokens that:
 - Enable zero-gas distribution to token holders
