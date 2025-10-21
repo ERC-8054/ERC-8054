@@ -8,7 +8,7 @@ status: Draft
 type: Standards Track
 category: ERC
 created: 2025-10-10
-requires: [20](./eip-20.md)
+requires: 20
 ---
 
 # ERC-8054: Forkable ERC-20 Token
