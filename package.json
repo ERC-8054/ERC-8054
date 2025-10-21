@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0",
-    "@openzeppelin/contracts-upgradeable": "^5.4.0"
+    "@openzeppelin/contracts-upgradeable": "^5.4.0",
+    "solady": "^0.1.26"
   },
   "devDependencies": {
     "@metamask/foundryup": "^1.0.1",

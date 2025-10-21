@@ -5,7 +5,6 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 interface IERC20Checkpointed is IERC20, IERC20Metadata {
-
     /**
      * @dev Returns the value of tokens in existence at specified checkpoint.
      * @param checkpoint The checkpoint to get the total supply at.

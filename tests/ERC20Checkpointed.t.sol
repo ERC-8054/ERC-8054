@@ -31,8 +31,8 @@ contract MockOZERC20 is ERC20 {
 
 contract ERC20CheckpointedTest is Test {
     MockERC20Checkpointed token;
-    address alice =  vm.randomAddress();
-    address bob =  vm.randomAddress();
+    address alice = vm.randomAddress();
+    address bob = vm.randomAddress();
 
     function setUp() public {
         token = new MockERC20Checkpointed("Mock", "MOCK");
@@ -98,8 +98,8 @@ contract ERC20Test is Test {
 
     address deployer = address(this);
     address alice = vm.randomAddress();
-    address bob =  vm.randomAddress();
-    address carol =  vm.randomAddress();
+    address bob = vm.randomAddress();
+    address carol = vm.randomAddress();
 
     function setUp() public {
         ctk = new MockERC20Checkpointed("MockToken", "MCK");
@@ -172,7 +172,6 @@ contract ERC20Test is Test {
         assertEq(ctk.balanceOf(carol), oz.balanceOf(carol), "carol balance equal after transferFrom");
         assertEq(ctk.totalSupply(), oz.totalSupply(), "supply equal after transferFrom");
     }
-
 
     function test_Reverts() public {
         // transfer more than balance

@@ -4,7 +4,6 @@ pragma solidity ^0.8.24;
 import {ERC20Checkpointed} from "./ERC20Checkpointed.sol";
 import {Checkpoints} from "./Checkpoints.sol";
 
-
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IERC20Checkpointed} from "./interfaces/IERC20Checkpointed.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
@@ -38,11 +37,10 @@ abstract contract ERC20FC is ERC20Checkpointed {
         _decimals = _checkpointedToken.decimals();
         // copy total supply
         _totalSupply.push(_checkpointNonce, _checkpointedToken.totalSupplyAt(_checkpointedNonce));
-
     }
 
     /// @inheritdoc IERC20
-    function balanceOf(address account) public view override virtual returns (uint256) {
+    function balanceOf(address account) public view virtual override returns (uint256) {
         // TODO: optimize for gas
         if (!_isForkedBalances[account]) {
             return _checkpointedToken.balanceOfAt(account, _checkpointedNonce);
@@ -57,7 +55,7 @@ abstract contract ERC20FC is ERC20Checkpointed {
      *
      * Emits a {Transfer} event.
      */
-    function _update(address from, address to, uint256 value) internal override virtual {
+    function _update(address from, address to, uint256 value) internal virtual override {
         if (from == address(0)) {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
             _totalSupply.push(_checkpointNonce, _totalSupply.latest() + value);
@@ -76,14 +74,14 @@ abstract contract ERC20FC is ERC20Checkpointed {
                 revert ERC20InsufficientBalance(from, fromBalance, value);
             }
             unchecked {
-            // Overflow not possible: value <= fromBalance <= totalSupply.
+                // Overflow not possible: value <= fromBalance <= totalSupply.
                 _balances[from].push(_checkpointNonce, fromBalance - value);
             }
         }
 
         if (to == address(0)) {
             unchecked {
-            // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
+                // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
                 _totalSupply.push(_checkpointNonce, _totalSupply.latest() - value);
             }
         } else {
@@ -97,7 +95,7 @@ abstract contract ERC20FC is ERC20Checkpointed {
                 _isForkedBalances[to] = true;
             }
             unchecked {
-            // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
+                // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
                 _balances[to].push(_checkpointNonce, _balances[to].latest() + value);
             }
         }

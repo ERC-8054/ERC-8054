@@ -33,7 +33,8 @@ contract MockOZERC20 is ERC20 {
 
 contract MockERC20Forked is ERC20Forked {
     constructor(string memory name_, string memory symbol_, uint32 checkpointedNonce_, address checkpointedToken_)
-        ERC20Forked(name_, symbol_, checkpointedNonce_, checkpointedToken_) {}
+        ERC20Forked(name_, symbol_, checkpointedNonce_, checkpointedToken_)
+    {}
 
     function mint(address to, uint256 amount) public {
         _update(address(0), to, amount);

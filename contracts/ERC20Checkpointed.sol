@@ -7,17 +7,12 @@ import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.so
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {Checkpoints} from "./Checkpoints.sol";
-import {ERC20Forked} from "./ERC20Forked.sol";
 import {IERC20Checkpointed} from "./interfaces/IERC20Checkpointed.sol";
 
 /**
  * @dev adapted from OpenZeppelin's ERC20 implementation with checkpointing added to balances and totalSupply.
  */
-abstract contract ERC20Checkpointed is
-Context,
-IERC20Checkpointed,
-IERC20Errors
-{
+abstract contract ERC20Checkpointed is Context, IERC20Checkpointed, IERC20Errors {
     using Checkpoints for Checkpoints.Trace256;
 
     mapping(address account => Checkpoints.Trace256) internal _balances;
@@ -188,7 +183,6 @@ IERC20Errors
 
         if (from == address(0)) {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
-            //            _totalSupply += value;
             _totalSupply.push(nonce, _totalSupply.latest() + value);
         } else {
             uint256 fromBalance = _balances[from].latest();
@@ -196,19 +190,19 @@ IERC20Errors
                 revert ERC20InsufficientBalance(from, fromBalance, value);
             }
             unchecked {
-            // Overflow not possible: value <= fromBalance <= totalSupply.
+                // Overflow not possible: value <= fromBalance <= totalSupply.
                 _balances[from].push(nonce, fromBalance - value);
             }
         }
 
         if (to == address(0)) {
             unchecked {
-            // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
+                // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
                 _totalSupply.push(nonce, _totalSupply.latest() - value);
             }
         } else {
             unchecked {
-            // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
+                // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
                 _balances[to].push(nonce, _balances[to].latest() + value);
             }
         }
