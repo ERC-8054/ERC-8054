@@ -1,16 +1,17 @@
 ---
-eip: XXXX
+eip: 8054
 title: Forkable ERC-20 Token
 description: Checkpoint-based ERC-20 tokens that can be efficiently forked to distribute new tokens to existing holders.
 author: Kevin (@kevzzsk), Fuxing (@fuxingloh)
+discussions-to: https://ethereum-magicians.org/t/erc-8054-forkable-erc-20-token/25853
 status: Draft
 type: Standards Track
 category: ERC
 created: 2025-10-10
-requires: 20
+requires: [20](./eip-20.md)
 ---
 
-# Forkable ERC-20 Token (Draft)
+# ERC-8054: Forkable ERC-20 Token
 
 ## Abstract
 
@@ -38,9 +39,9 @@ This EIP proposes a standard for forkable ERC-20 tokens that:
 By implementing checkpointed balances, tokens can be efficiently forked at any historical point,
 with new token balances automatically derived from the source token without any state duplication or expensive operations.
 
-## Use Cases
+### Use Cases
 
-### Airdrops
+#### Airdrops
 
 Airdrops are a common use case for forkable tokens.
 Without forkable ERC-20 tokens, manual snapshotting and merkle root creation are required.
@@ -50,7 +51,7 @@ With forkable ERC-20 tokens, users do not have to claim the new ERC-20 token.
 The forked ERC-20 token is automatically transferred (via inheritance)
 to the users who have positive balance at the fork point.
 
-### Tokenized Risk and Yield
+#### Tokenized Risk and Yield
 
 [ERC-4626](./eip-4626.md) is a popular standard for yield-bearing vaults that manage an underlying ERC-20 asset.
 Risk and yield are commonly rebased on the same underlying asset,
@@ -63,7 +64,7 @@ Forkable ERC-20 tokens allow for tokenization of risk and yield to its immediate
 While this is not a foreign concept in the space,
 its implementation has so far been off-chain—with their own trust domain separate from the chain.  
 
-### Token Migration
+#### Token Migration
 
 Protocol upgrades, tokenomics changes, or contract improvements often require migrating to a new token.
 
@@ -79,11 +80,11 @@ With forkable ERC-20 tokens, migration becomes seamless:
 - Users can immediately interact with the new token without claiming
 - No gas costs for holders, no manual snapshot management required
 
-### Governance Token Derivatives
+#### Governance Token Derivatives
 
 Create governance tokens or voting power derivatives based on historical token holdings without affecting the original token's utility or requiring users to lock or migrate their holdings.
 
-### Rewards and Loyalty Programs
+#### Rewards and Loyalty Programs
 
 Distribute loyalty or reward tokens proportional to historical holdings or activity,
 tracked via checkpoints, without complex off-chain calculation and distribution logic.
@@ -147,8 +148,8 @@ They inherit all balances from that checkpoint.
 
 All forked ERC-20 tokens:
 
-- MUST implement ERC-20
-- MUST implement optional ERC-20 metadata that includes:
+- MUST implement ERC20
+- MUST implement optional ERC20 metadata that includes:
   - `name` (string)
   - `symbol` (string)
   - `decimals` (uint8)
@@ -231,6 +232,10 @@ This repository provides a minimal reference:
 
 **Note**: The reference implementation is provided for illustrative purposes. Production implementations should undergo thorough security audits.
 
+### Reference Tests
+
+See `tests/` directory for implementation tests.
+
 ## Security Considerations
 
 ### Approvals
@@ -260,10 +265,6 @@ If allowed, forked token balances MAY become inconsistent and lead to accounting
 ### Checkpoint Nonce Overflow
 
 Implementations should consider the implications of checkpoint nonce overflow when using a smaller uint type.
-
-## Reference Tests
-
-See `tests/` directory for implementation tests.
 
 ## Copyright
 
