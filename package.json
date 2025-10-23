@@ -1,11 +1,12 @@
 {
-  "name": "@satlayer/erc-8054",
-  "description": "",
+  "name": "erc-8054",
+  "description": "ERC-8054: Forkable ERC-20 Token",
   "version": "0.0.0",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "files": [
-    "contracts"
+    "contracts",
+    "out"
   ],
   "scripts": {
     "build": "forge build",
@@ -26,7 +27,6 @@
     "solady": "^0.1.26"
   },
   "devDependencies": {
-    "@metamask/foundryup": "^1.0.1",
     "@openzeppelin/foundry-upgrades": "^0.4.0",
     "forge-std": "https://github.com/foundry-rs/forge-std/tarball/v1.9.7"
   },
