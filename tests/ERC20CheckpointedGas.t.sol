@@ -3,9 +3,9 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {console} from "forge-std/console.sol";
-import {ERC20Checkpointed} from "../contracts/ERC20Checkpointed.sol";
-
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+import {ERC20Checkpointed} from "../contracts/ERC20Checkpointed.sol";
 
 // Minimal mock to expose mint for setup
 contract MockERC20Checkpointed is ERC20Checkpointed {

@@ -12,15 +12,5 @@ ast = true
 build_info = true
 extra_output = ["storageLayout"]
 
-[lint]
+[profile.lint]
 ignore = ["test/**/*"]
-
-[rpc_endpoints]
-mainnet = "https://mainnet.gateway.tenderly.co"
-sepolia = "https://sepolia.gateway.tenderly.co"
-holesky = "https://holesky.gateway.tenderly.co"
-
-[etherscan]
-mainnet = { chain = 1, key = "${ETHERSCAN_API_KEY}" }
-sepolia = { chain = 11155111, key = "${ETHERSCAN_API_KEY}" }
-holesky = { chain = 17000, key = "${ETHERSCAN_API_KEY}" }
