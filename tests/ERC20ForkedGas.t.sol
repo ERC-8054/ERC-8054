@@ -2,13 +2,12 @@
 pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
+import {console} from "forge-std/console.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import {ERC20Checkpointed} from "../contracts/ERC20Checkpointed.sol";
 import {ERC20Forked} from "../contracts/ERC20Forked.sol";
 
-import {console} from "forge-std/console.sol";
-import {LibBitmap} from "solady/utils/LibBitmap.sol";
 
 contract MockERC20Checkpointed is ERC20Checkpointed {
     constructor(string memory name_, string memory symbol_) ERC20Checkpointed(name_, symbol_) {}
@@ -49,10 +48,6 @@ contract MockERC20Forked is ERC20Forked {
 }
 
 contract ERC20ForkedGas is Test {
-    using LibBitmap for LibBitmap.Bitmap;
-
-    LibBitmap.Bitmap private _isForkedBalances;
-
     MockERC20Checkpointed sourceToken; // checkpointed source token
     MockERC20Forked token;
     MockOZERC20 token2;

@@ -224,17 +224,22 @@ Existing contracts and wallets that interact with ERC-20 tokens will work withou
 
 This repository provides a minimal reference:
 
-- interfaces/IERC20Checkpointed.sol: ERC-20 checkpointed interface.
-- contracts/Checkpoints.sol: lightweight checkpoint library (uint256-based) used for checkpointing.
-- contracts/ERC20Checkpointed.sol: ERC-20 with checkpointed balances and total supply.
-- contracts/ERC20Forked.sol: ERC-20 forked from a source token at specified nonce.
-- contracts/ERC20FC.sol: ERC-20 forked and checkpointed from a source token at specified nonce.
+```bash
+├── contracts                       # Contains implementation contracts for ERC-8054
+│   ├── Checkpoints.sol             # Lightweight checkpoint library (uint256-based) used for checkpointing.
+│   ├── ERC20Checkpointed.sol       # Forkable ERC-20 with checkpointed balances and total supply.
+│   ├── ERC20FC.sol                 # Forked Forkable ERC-20 token from a source token (recursive fork).
+│   ├── ERC20Forked.sol             # Forked ERC-20 token from a source token.
+│   └── interfaces          
+│       └── IERC20Checkpointed.sol  # Forkable ERC-20 interface.
+└── tests
+    ├── ERC20Checkpointed.t.sol
+    ├── ERC20CheckpointedGas.t.sol
+    ├── ERC20Forked.t.sol
+    └── ERC20ForkedGas.t.sol
+```
 
 **Note**: The reference implementation is provided for illustrative purposes. Production implementations should undergo thorough security audits.
-
-### Reference Tests
-
-See `tests/` directory for implementation tests.
 
 ## Security Considerations
 

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {IERC20Checkpointed} from "./interfaces/IERC20Checkpointed.sol";
-
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import {LibBitmap} from "solady/utils/LibBitmap.sol";
+
+import {IERC20Checkpointed} from "./interfaces/IERC20Checkpointed.sol";
 
 /**
  * @dev A forked ERC20 contract that is forked from IERC20Checkpointed at certain checkpoint nonce
@@ -24,8 +24,8 @@ abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
 
     mapping(address account => mapping(address spender => uint256)) private _allowances;
 
-    uint256 private immutable _checkpointedNonce;
-    IERC20Checkpointed private immutable _checkpointedToken;
+    uint256 private immutable _forkedNonce;
+    IERC20Checkpointed private immutable _sourceToken;
 
     uint256 private _totalSupply;
 
@@ -38,21 +38,18 @@ abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * Both values are immutable: they can only be set once during construction.
      */
-    constructor(string memory name_, string memory symbol_, uint256 checkpointedNonce_, address checkpointedToken_) {
-        _checkpointedToken = IERC20Checkpointed(checkpointedToken_);
+    constructor(string memory name_, string memory symbol_, uint256 forkedNonce_, address sourceToken_) {
+        _sourceToken = IERC20Checkpointed(sourceToken_);
 
-        require(
-            checkpointedNonce_ <= _checkpointedToken.checkpointNonce(),
-            "ERC20Forked: checkpointed nonce is in the future"
-        );
+        require(forkedNonce_ <= _sourceToken.checkpointNonce(), "ERC20Forked: checkpointed nonce is in the future");
 
-        _checkpointedNonce = checkpointedNonce_;
+        _forkedNonce = forkedNonce_;
         _name = name_;
         _symbol = symbol_;
         // copy decimals from checkpointed token
-        _decimals = _checkpointedToken.decimals();
+        _decimals = _sourceToken.decimals();
         // copy total supply
-        _totalSupply = _checkpointedToken.totalSupplyAt(checkpointedNonce_);
+        _totalSupply = _sourceToken.totalSupplyAt(forkedNonce_);
     }
 
     /**
@@ -84,9 +81,8 @@ abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
 
     /// @inheritdoc IERC20
     function balanceOf(address account) public view virtual returns (uint256) {
-        // TODO: optimize for gas
         if (!_isForkedBalances.get(uint256(uint160(account)))) {
-            return _checkpointedToken.balanceOfAt(account, _checkpointedNonce);
+            return _sourceToken.balanceOfAt(account, _forkedNonce);
         }
         return _balances[account];
     }
@@ -181,12 +177,11 @@ abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
             _totalSupply += value;
         } else {
-            // TODO: optimize for gas
             uint256 fromBalance;
             if (_isForkedBalances.get(uint256(uint160(from)))) {
                 fromBalance = _balances[from];
             } else {
-                fromBalance = _checkpointedToken.balanceOfAt(from, _checkpointedNonce);
+                fromBalance = _sourceToken.balanceOfAt(from, _forkedNonce);
                 _isForkedBalances.set(uint256(uint160(from)));
             }
 
@@ -205,12 +200,11 @@ abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
                 _totalSupply -= value;
             }
         } else {
-            // TODO: optimize for gas
             uint256 toBalance;
             if (_isForkedBalances.get(uint256(uint160(to)))) {
                 toBalance = _balances[to];
             } else {
-                toBalance = _checkpointedToken.balanceOfAt(to, _checkpointedNonce);
+                toBalance = _sourceToken.balanceOfAt(to, _forkedNonce);
                 _isForkedBalances.set(uint256(uint160(to)));
             }
             unchecked {
