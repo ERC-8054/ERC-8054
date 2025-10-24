@@ -6,8 +6,8 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-
 import {Checkpoints} from "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
+
 import {IERC20Checkpointed} from "./interfaces/IERC20Checkpointed.sol";
 
 /**
