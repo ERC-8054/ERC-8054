@@ -34,7 +34,7 @@ contract MockOZERC20 is ERC20 {
 }
 
 contract MockERC20Forked is ERC20Forked {
-    constructor(string memory name_, string memory symbol_, uint256 checkpointedNonce_, address checkpointedToken_)
+    constructor(string memory name_, string memory symbol_, uint48 checkpointedNonce_, address checkpointedToken_)
         ERC20Forked(name_, symbol_, checkpointedNonce_, checkpointedToken_)
     {}
 

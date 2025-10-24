@@ -16,7 +16,7 @@ contract MockERC20Checkpointed is ERC20Checkpointed {
     }
 }
 
-contract MockERC20 is ERC20 {
+contract MockERC20OZ is ERC20 {
     constructor(string memory name_, string memory symbol_) ERC20(name_, symbol_) {}
 
     function mint(address to, uint256 amount) public {
@@ -24,32 +24,32 @@ contract MockERC20 is ERC20 {
     }
 }
 
+/**
+ * Run gas test with --isolate to get consistent measurements.
+ */
 contract ERC20TransferGasTest is Test {
     MockERC20Checkpointed token;
-    MockERC20 token2;
+    MockERC20OZ token2;
     address alice = address(0xA11CE);
     address bob = address(0xB0B);
+    address random = address(0x1234);
 
     function setUp() public {
         token = new MockERC20Checkpointed("Mock", "MOCK");
         token.mint(alice, 1_000 ether);
-        token.mint(bob, 1_000 ether);
+//        token.mint(bob, 1_000 ether);
 
-        token2 = new MockERC20("Mock2", "MOCK2");
+        token2 = new MockERC20OZ("Mock2", "MOCK2");
         token2.mint(alice, 1_000 ether);
-        token2.mint(bob, 1_000 ether);
+//        token2.mint(bob, 1_000 ether);
     }
 
     // Simple gas test for transfer
-    function test_transfer_gas() public {
-        vm.prank(alice);
-        uint256 gasBefore = gasleft();
-        token.transfer(bob, 1 ether);
-        uint256 gasAfter = gasleft();
-        uint256 gasUsed = gasBefore - gasAfter;
+    function test_transfer_gas_cold() public {
+        uint256 gasUsed = _transferToken(alice, bob, 1 ether);
 
         // Log the gas used so it appears in test output / CI logs
-        console.log("Gas used: transfer", gasUsed);
+        console.log("Gas used: transfer_cold", gasUsed);
 
         // Optional loose upper bound to catch accidental regressions while avoiding flakiness
         // Adjust threshold if needed based on local runs. This is intentionally generous.
@@ -57,18 +57,64 @@ contract ERC20TransferGasTest is Test {
     }
 
     // Simple gas test for transfer on standard ERC20 for comparison
-    function test_transfer_gas_erc20() public {
-        vm.prank(alice);
-        uint256 gasBefore = gasleft();
-        token2.transfer(bob, 1 ether);
-        uint256 gasAfter = gasleft();
-        uint256 gasUsed = gasBefore - gasAfter;
+    function test_transfer_gas_erc20_cold() public {
+        uint256 gasUsed = _transferToken2(alice, bob, 1 ether);
 
         // Log the gas used so it appears in test output / CI logs
-        console.log("Gas used: transfer ERC20", gasUsed);
+        console.log("Gas used: transfer_erc20_cold", gasUsed);
 
         // Optional loose upper bound to catch accidental regressions while avoiding flakiness
         // Adjust threshold if needed based on local runs. This is intentionally generous.
         assertLt(gasUsed, 60_000, "transfer ERC20 gas should be below threshold");
+    }
+
+    function test_transfer_gas_warm() public {
+        // warm up
+        vm.startPrank(alice);
+        token.transfer(bob, 1 ether);
+        vm.stopPrank();
+
+        uint256 gasUsed = _transferToken(alice, bob, 1 ether);
+
+        // Log the gas used so it appears in test output / CI logs
+        console.log("Gas used: transfer_warm", gasUsed);
+
+        // Optional loose upper bound to catch accidental regressions while avoiding flakiness
+        // Adjust threshold if needed based on local runs. This is intentionally generous.
+        assertLt(gasUsed, 150_000, "transfer gas should be below threshold");
+    }
+
+    function test_transfer_gas_erc20_warm() public {
+        // warm up
+        vm.startPrank(alice);
+        token2.transfer(bob, 1 ether);
+        vm.stopPrank();
+
+        uint256 gasUsed = _transferToken2(alice, bob, 1 ether);
+
+        // Log the gas used so it appears in test output / CI logs
+        console.log("Gas used: transfer_erc20_warm", gasUsed);
+
+        // Optional loose upper bound to catch accidental regressions while avoiding flakiness
+        // Adjust threshold if needed based on local runs. This is intentionally generous.
+        assertLt(gasUsed, 60_000, "transfer ERC20 gas should be below threshold");
+    }
+
+    function _transferToken(address from, address to, uint256 amount) internal returns (uint256 gasUsed) {
+        vm.startPrank(from);
+        uint256 gasBefore = gasleft();
+        token.transfer(to, 1 ether);
+        uint256 gasAfter = gasleft();
+        gasUsed = gasBefore - gasAfter;
+        vm.stopPrank();
+    }
+
+    function _transferToken2(address from, address to, uint256 amount) internal returns (uint256 gasUsed) {
+        vm.startPrank(from);
+        uint256 gasBefore = gasleft();
+        token2.transfer(to, 1 ether);
+        uint256 gasAfter = gasleft();
+        gasUsed = gasBefore - gasAfter;
+        vm.stopPrank();
     }
 }

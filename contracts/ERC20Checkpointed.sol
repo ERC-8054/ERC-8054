@@ -5,23 +5,24 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import {Checkpoints} from "./Checkpoints.sol";
+import {Checkpoints} from "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
 import {IERC20Checkpointed} from "./interfaces/IERC20Checkpointed.sol";
 
 /**
  * @dev adapted from OpenZeppelin's ERC20 implementation with checkpointing added to balances and totalSupply.
  */
 abstract contract ERC20Checkpointed is Context, IERC20Checkpointed, IERC20Errors {
-    using Checkpoints for Checkpoints.Trace256;
+    using Checkpoints for Checkpoints.Trace208;
 
-    mapping(address account => Checkpoints.Trace256) internal _balances;
+    mapping(address account => Checkpoints.Trace208) internal _balances;
 
     mapping(address account => mapping(address spender => uint256)) internal _allowances;
 
-    uint256 internal _checkpointNonce;
+    uint48 internal _checkpointNonce;
 
-    Checkpoints.Trace256 internal _totalSupply;
+    Checkpoints.Trace208 internal _totalSupply;
 
     string internal _name;
     string internal _symbol;
@@ -74,7 +75,7 @@ abstract contract ERC20Checkpointed is Context, IERC20Checkpointed, IERC20Errors
     }
 
     /// @inheritdoc IERC20Checkpointed
-    function totalSupplyAt(uint256 checkpoint) public view virtual returns (uint256) {
+    function totalSupplyAt(uint48 checkpoint) public view virtual returns (uint256) {
         return _totalSupply.upperLookupRecent(checkpoint);
     }
 
@@ -84,12 +85,12 @@ abstract contract ERC20Checkpointed is Context, IERC20Checkpointed, IERC20Errors
     }
 
     /// @inheritdoc IERC20Checkpointed
-    function balanceOfAt(address account, uint256 checkpoint) public view virtual returns (uint256) {
+    function balanceOfAt(address account, uint48 checkpoint) public view virtual returns (uint256) {
         return _balances[account].upperLookupRecent(checkpoint);
     }
 
     /// @inheritdoc IERC20Checkpointed
-    function checkpointNonce() public view virtual returns (uint256) {
+    function checkpointNonce() public view virtual returns (uint48) {
         return _checkpointNonce;
     }
 
@@ -179,31 +180,33 @@ abstract contract ERC20Checkpointed is Context, IERC20Checkpointed, IERC20Errors
      * Emits a {Transfer} event.
      */
     function _update(address from, address to, uint256 value) internal virtual {
-        uint256 nonce = _checkpointNonce + 1;
+        uint48 nonce = _checkpointNonce + 1;
+
+        uint208 safeValue = SafeCast.toUint208(value);
 
         if (from == address(0)) {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
-            _totalSupply.push(nonce, _totalSupply.latest() + value);
+            _totalSupply.push(nonce, _totalSupply.latest() + safeValue);
         } else {
-            uint256 fromBalance = _balances[from].latest();
-            if (fromBalance < value) {
-                revert ERC20InsufficientBalance(from, fromBalance, value);
+            uint208 fromBalance = _balances[from].latest();
+            if (fromBalance < safeValue) {
+                revert ERC20InsufficientBalance(from, fromBalance, safeValue);
             }
             unchecked {
                 // Overflow not possible: value <= fromBalance <= totalSupply.
-                _balances[from].push(nonce, fromBalance - value);
+                _balances[from].push(nonce, fromBalance - safeValue);
             }
         }
 
         if (to == address(0)) {
             unchecked {
                 // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-                _totalSupply.push(nonce, _totalSupply.latest() - value);
+                _totalSupply.push(nonce, _totalSupply.latest() - safeValue);
             }
         } else {
             unchecked {
-                // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-                _balances[to].push(nonce, _balances[to].latest() + value);
+                // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint208.
+                _balances[to].push(nonce, _balances[to].latest() + safeValue);
             }
         }
 
