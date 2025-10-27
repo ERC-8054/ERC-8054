@@ -190,7 +190,7 @@ abstract contract ERC20Checkpointed is Context, IERC20Checkpointed, IERC20Errors
         } else {
             uint208 fromBalance = _balances[from].latest();
             if (fromBalance < safeValue) {
-                revert ERC20InsufficientBalance(from, fromBalance, safeValue);
+                revert ERC20InsufficientBalance(from, fromBalance, value);
             }
             unchecked {
                 // Overflow not possible: value <= fromBalance <= totalSupply.

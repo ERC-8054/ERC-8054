@@ -98,7 +98,7 @@ abstract contract ERC20FC is ERC20Checkpointed {
             }
             unchecked {
                 // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-                _balances[to].push(nonce, _balances[to].latest() + safeValue);
+                _balances[to].push(nonce, toBalance + safeValue);
             }
         }
 

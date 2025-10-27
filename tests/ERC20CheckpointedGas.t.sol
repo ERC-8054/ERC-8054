@@ -84,7 +84,7 @@ contract ERC20CheckpointedGasTest is Test {
     function _transferToken(address from, address to, uint256 amount) internal returns (uint256 gasUsed) {
         vm.startPrank(from);
         uint256 gasBefore = gasleft();
-        token.transfer(to, 1 ether);
+        token.transfer(to, amount);
         uint256 gasAfter = gasleft();
         gasUsed = gasBefore - gasAfter;
         vm.stopPrank();
@@ -93,7 +93,7 @@ contract ERC20CheckpointedGasTest is Test {
     function _transferToken2(address from, address to, uint256 amount) internal returns (uint256 gasUsed) {
         vm.startPrank(from);
         uint256 gasBefore = gasleft();
-        token2.transfer(to, 1 ether);
+        token2.transfer(to, amount);
         uint256 gasAfter = gasleft();
         gasUsed = gasBefore - gasAfter;
         vm.stopPrank();
