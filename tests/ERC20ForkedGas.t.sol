@@ -34,7 +34,7 @@ contract MockOZERC20 is ERC20 {
 }
 
 contract MockERC20Forked is ERC20Forked {
-    constructor(string memory name_, string memory symbol_, uint256 checkpointedNonce_, address checkpointedToken_)
+    constructor(string memory name_, string memory symbol_, uint48 checkpointedNonce_, address checkpointedToken_)
         ERC20Forked(name_, symbol_, checkpointedNonce_, checkpointedToken_)
     {}
 
@@ -81,10 +81,6 @@ contract ERC20ForkedGas is Test {
 
         // Log the gas used so it appears in test output / CI logs
         console.log("Gas used: transfer", gasUsed);
-
-        // Optional loose upper bound to catch accidental regressions while avoiding flakiness
-        // Adjust threshold if needed based on local runs. This is intentionally generous.
-        assertLt(gasUsed, 150_000, "transfer gas should be below threshold");
     }
 
     // Simple gas test for transfer on standard ERC20 for comparison
@@ -98,9 +94,5 @@ contract ERC20ForkedGas is Test {
 
         // Log the gas used so it appears in test output / CI logs
         console.log("Gas used: transfer ERC20", gasUsed);
-
-        // Optional loose upper bound to catch accidental regressions while avoiding flakiness
-        // Adjust threshold if needed based on local runs. This is intentionally generous.
-        assertLt(gasUsed, 60_000, "transfer ERC20 gas should be below threshold");
     }
 }

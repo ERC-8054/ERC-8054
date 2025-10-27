@@ -24,7 +24,7 @@ abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
 
     mapping(address account => mapping(address spender => uint256)) private _allowances;
 
-    uint256 private immutable _forkedNonce;
+    uint48 private immutable _forkedNonce;
     IERC20Checkpointed private immutable _sourceToken;
 
     uint256 private _totalSupply;
@@ -38,7 +38,7 @@ abstract contract ERC20Forked is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * Both values are immutable: they can only be set once during construction.
      */
-    constructor(string memory name_, string memory symbol_, uint256 forkedNonce_, address sourceToken_) {
+    constructor(string memory name_, string memory symbol_, uint48 forkedNonce_, address sourceToken_) {
         _sourceToken = IERC20Checkpointed(sourceToken_);
 
         require(forkedNonce_ <= _sourceToken.checkpointNonce(), "ERC20Forked: checkpointed nonce is in the future");
