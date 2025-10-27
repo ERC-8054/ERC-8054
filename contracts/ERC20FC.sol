@@ -45,7 +45,7 @@ abstract contract ERC20FC is ERC20Checkpointed {
     /// @inheritdoc IERC20
     function balanceOf(address account) public view virtual override returns (uint256) {
         if (_isForkedBalances.get(uint256(uint160(account)))) {
-            return balanceOf(account);
+            return _balances[account].latest();
         }
         return _checkpointedToken.balanceOfAt(account, _checkpointedNonce);
     }
@@ -64,7 +64,7 @@ abstract contract ERC20FC is ERC20Checkpointed {
 
         if (from == address(0)) {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
-            _totalSupply.push(_checkpointNonce, _totalSupply.latest() + safeValue);
+            _totalSupply.push(nonce, _totalSupply.latest() + safeValue);
         } else {
             uint208 fromBalance;
             if (_isForkedBalances.get(uint256(uint160(from)))) {
@@ -79,14 +79,14 @@ abstract contract ERC20FC is ERC20Checkpointed {
             }
             unchecked {
                 // Overflow not possible: value <= fromBalance <= totalSupply.
-                _balances[from].push(_checkpointNonce, fromBalance - safeValue);
+                _balances[from].push(nonce, fromBalance - safeValue);
             }
         }
 
         if (to == address(0)) {
             unchecked {
                 // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-                _totalSupply.push(_checkpointNonce, _totalSupply.latest() - safeValue);
+                _totalSupply.push(nonce, _totalSupply.latest() - safeValue);
             }
         } else {
             uint208 toBalance;
@@ -98,9 +98,12 @@ abstract contract ERC20FC is ERC20Checkpointed {
             }
             unchecked {
                 // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-                _balances[to].push(_checkpointNonce, _balances[to].latest() + safeValue);
+                _balances[to].push(nonce, _balances[to].latest() + safeValue);
             }
         }
+
+        // update the nonce
+        _checkpointNonce = nonce;
 
         emit Transfer(from, to, value);
     }
