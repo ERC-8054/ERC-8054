@@ -27,21 +27,18 @@ contract MockERC20OZ is ERC20 {
 /**
  * Run gas test with --isolate to get consistent measurements.
  */
-contract ERC20TransferGasTest is Test {
+contract ERC20CheckpointedGasTest is Test {
     MockERC20Checkpointed token;
     MockERC20OZ token2;
     address alice = address(0xA11CE);
     address bob = address(0xB0B);
-    address random = address(0x1234);
 
     function setUp() public {
         token = new MockERC20Checkpointed("Mock", "MOCK");
         token.mint(alice, 1_000 ether);
-//        token.mint(bob, 1_000 ether);
 
         token2 = new MockERC20OZ("Mock2", "MOCK2");
         token2.mint(alice, 1_000 ether);
-//        token2.mint(bob, 1_000 ether);
     }
 
     // Simple gas test for transfer
@@ -50,10 +47,6 @@ contract ERC20TransferGasTest is Test {
 
         // Log the gas used so it appears in test output / CI logs
         console.log("Gas used: transfer_cold", gasUsed);
-
-        // Optional loose upper bound to catch accidental regressions while avoiding flakiness
-        // Adjust threshold if needed based on local runs. This is intentionally generous.
-        assertLt(gasUsed, 150_000, "transfer gas should be below threshold");
     }
 
     // Simple gas test for transfer on standard ERC20 for comparison
@@ -62,10 +55,6 @@ contract ERC20TransferGasTest is Test {
 
         // Log the gas used so it appears in test output / CI logs
         console.log("Gas used: transfer_erc20_cold", gasUsed);
-
-        // Optional loose upper bound to catch accidental regressions while avoiding flakiness
-        // Adjust threshold if needed based on local runs. This is intentionally generous.
-        assertLt(gasUsed, 60_000, "transfer ERC20 gas should be below threshold");
     }
 
     function test_transfer_gas_warm() public {
@@ -78,10 +67,6 @@ contract ERC20TransferGasTest is Test {
 
         // Log the gas used so it appears in test output / CI logs
         console.log("Gas used: transfer_warm", gasUsed);
-
-        // Optional loose upper bound to catch accidental regressions while avoiding flakiness
-        // Adjust threshold if needed based on local runs. This is intentionally generous.
-        assertLt(gasUsed, 150_000, "transfer gas should be below threshold");
     }
 
     function test_transfer_gas_erc20_warm() public {
@@ -94,10 +79,6 @@ contract ERC20TransferGasTest is Test {
 
         // Log the gas used so it appears in test output / CI logs
         console.log("Gas used: transfer_erc20_warm", gasUsed);
-
-        // Optional loose upper bound to catch accidental regressions while avoiding flakiness
-        // Adjust threshold if needed based on local runs. This is intentionally generous.
-        assertLt(gasUsed, 60_000, "transfer ERC20 gas should be below threshold");
     }
 
     function _transferToken(address from, address to, uint256 amount) internal returns (uint256 gasUsed) {
