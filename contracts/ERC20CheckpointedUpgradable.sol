@@ -100,6 +100,9 @@ abstract contract ERC20CheckpointedUpgradable is Initializable, ContextUpgradeab
     /// @inheritdoc IERC20Checkpointed
     function totalSupplyAt(uint48 checkpoint) public view virtual returns (uint256) {
         ERC20CheckpointedStorage storage $ = _getERC20Storage();
+        if (checkpoint > $._checkpointNonce) {
+            revert IERC20Checkpointed.ERC20FutureCheckpoint(checkpoint, $._checkpointNonce);
+        }
         return $._totalSupply.upperLookupRecent(checkpoint);
     }
 
@@ -112,6 +115,9 @@ abstract contract ERC20CheckpointedUpgradable is Initializable, ContextUpgradeab
     /// @inheritdoc IERC20Checkpointed
     function balanceOfAt(address account, uint48 checkpoint) public view virtual returns (uint256) {
         ERC20CheckpointedStorage storage $ = _getERC20Storage();
+        if (checkpoint > $._checkpointNonce) {
+            revert IERC20Checkpointed.ERC20FutureCheckpoint(checkpoint, $._checkpointNonce);
+        }
         return $._balances[account].upperLookupRecent(checkpoint);
     }
 

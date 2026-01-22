@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import {ERC20Checkpointed} from "../contracts/ERC20Checkpointed.sol";
+import {IERC20Checkpointed} from "../contracts/interfaces/IERC20Checkpointed.sol";
 
 contract MockERC20Checkpointed is ERC20Checkpointed {
     constructor(string memory name_, string memory symbol_) ERC20Checkpointed(name_, symbol_) {}
@@ -82,11 +83,15 @@ contract ERC20CheckpointedTest is Test {
         assertEq(token.balanceOfAt(bob, 2), 40, "bob at cp2 unchanged");
         assertEq(token.balanceOfAt(bob, 3), 30, "bob at cp3 unchanged");
 
-        // Querying a future checkpoint should return the latest known value
-        // (upperLookupRecent returns last checkpoint <= key)
-        assertEq(token.totalSupplyAt(999), 90, "future cp should return latest");
-        assertEq(token.balanceOfAt(alice, 999), 60, "alice future cp should return latest");
-        assertEq(token.balanceOfAt(bob, 999), 30, "bob future cp should return latest");
+        // Querying a future checkpoint should revert
+        vm.expectRevert(abi.encodeWithSelector(IERC20Checkpointed.ERC20FutureCheckpoint.selector, 999, 3));
+        token.totalSupplyAt(999);
+
+        vm.expectRevert(abi.encodeWithSelector(IERC20Checkpointed.ERC20FutureCheckpoint.selector, 999, 3));
+        token.balanceOfAt(alice, 999);
+
+        vm.expectRevert(abi.encodeWithSelector(IERC20Checkpointed.ERC20FutureCheckpoint.selector, 999, 3));
+        token.balanceOfAt(bob, 999);
     }
 }
 

@@ -139,7 +139,7 @@ interface IERC20Checkpointed is IERC20, IERC20Metadata {
 - `balanceOf(account)` MUST return the latest checkpointed balance of token held by the account.
 - Any state changes (transfer, mint, burn) MUST push the latest checkpoint balances and total supply.
 - Checkpoint nonces MUST be monotonically increasing.
-- Querying a future checkpoint MUST return the latest known value.
+- Querying a future checkpoint MUST revert.
 
 ### Forked ERC-20 tokens
 
@@ -226,7 +226,6 @@ This repository provides a minimal reference:
 
 ```bash
 ├── contracts                       # Contains implementation contracts for ERC-8054
-│   ├── Checkpoints.sol             # Lightweight checkpoint library (uint256-based) used for checkpointing.
 │   ├── ERC20Checkpointed.sol       # Forkable ERC-20 with checkpointed balances and total supply.
 │   ├── ERC20FC.sol                 # Forked Forkable ERC-20 token from a source token (recursive fork).
 │   ├── ERC20Forked.sol             # Forked ERC-20 token from a source token.
@@ -264,8 +263,9 @@ Mismatched decimals MAY lead to incorrect balances and loss of precision.
 
 ### Future Checkpoints
 
-Forking at a future checkpoint SHOULD be prevented by implementations.
-If allowed, forked token balances MAY become inconsistent and lead to accounting errors.
+Querying a future checkpoint MUST revert with an error.
+This prevents forking at a future checkpoint and ensures forked token balances remain consistent.
+Implementations MUST check that the requested checkpoint does not exceed the current checkpoint nonce.
 
 ### Checkpoint Nonce Overflow
 

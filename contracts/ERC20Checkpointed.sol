@@ -76,6 +76,9 @@ abstract contract ERC20Checkpointed is Context, IERC20Checkpointed, IERC20Errors
 
     /// @inheritdoc IERC20Checkpointed
     function totalSupplyAt(uint48 checkpoint) public view virtual returns (uint256) {
+        if (checkpoint > _checkpointNonce) {
+            revert IERC20Checkpointed.ERC20FutureCheckpoint(checkpoint, _checkpointNonce);
+        }
         return _totalSupply.upperLookupRecent(checkpoint);
     }
 
@@ -86,6 +89,9 @@ abstract contract ERC20Checkpointed is Context, IERC20Checkpointed, IERC20Errors
 
     /// @inheritdoc IERC20Checkpointed
     function balanceOfAt(address account, uint48 checkpoint) public view virtual returns (uint256) {
+        if (checkpoint > _checkpointNonce) {
+            revert IERC20Checkpointed.ERC20FutureCheckpoint(checkpoint, _checkpointNonce);
+        }
         return _balances[account].upperLookupRecent(checkpoint);
     }
 

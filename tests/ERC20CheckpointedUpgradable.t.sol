@@ -6,6 +6,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 import {ERC20CheckpointedUpgradable} from "../contracts/ERC20CheckpointedUpgradable.sol";
+import {IERC20Checkpointed} from "../contracts/interfaces/IERC20Checkpointed.sol";
 
 contract MockERC20CheckpointedUpgradable is ERC20CheckpointedUpgradable {
     function initialize(string memory name_, string memory symbol_) public initializer {
@@ -94,10 +95,15 @@ contract ERC20CheckpointedUpgradableTest is Test {
         assertEq(token.balanceOfAt(bob, 2), 40, "bob at cp2 unchanged");
         assertEq(token.balanceOfAt(bob, 3), 30, "bob at cp3 unchanged");
 
-        // Querying a future checkpoint should return the latest known value
-        assertEq(token.totalSupplyAt(999), 90, "future cp should return latest");
-        assertEq(token.balanceOfAt(alice, 999), 60, "alice future cp should return latest");
-        assertEq(token.balanceOfAt(bob, 999), 30, "bob future cp should return latest");
+        // Querying a future checkpoint should revert
+        vm.expectRevert(abi.encodeWithSelector(IERC20Checkpointed.ERC20FutureCheckpoint.selector, 999, 3));
+        token.totalSupplyAt(999);
+
+        vm.expectRevert(abi.encodeWithSelector(IERC20Checkpointed.ERC20FutureCheckpoint.selector, 999, 3));
+        token.balanceOfAt(alice, 999);
+
+        vm.expectRevert(abi.encodeWithSelector(IERC20Checkpointed.ERC20FutureCheckpoint.selector, 999, 3));
+        token.balanceOfAt(bob, 999);
     }
 }
 
